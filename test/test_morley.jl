@@ -3,12 +3,12 @@ struct Morley{RefTriangle,order} <: Ferrite.Interpolation{RefTriangle,order}
 end
 
 FerriteGenElement.interpolation_dofs(::Morley{RefTriangle,2}) = (
-    PointEvaluation(Vec((0.0, 0.0))),
-    PointEvaluation(Vec((1.0, 0.0))),
-    PointEvaluation(Vec((0.0, 1.0))), 
-    NormalGradientEvaluation(Vec(1/2, 1/2), Vec(1/√2, 1/√2)),
-    NormalGradientEvaluation(Vec(0.0, 1/2), Vec(1.0, 0.0)),
-    NormalGradientEvaluation(Vec(1/2, 0.0), Vec((0.0,-1.0))),
+    ValueDof(Vec((0.0, 0.0))),
+    ValueDof(Vec((1.0, 0.0))),
+    ValueDof(Vec((0.0, 1.0))), 
+    NormalGradientDof(Vec(1/2, 1/2), Vec(1/√2, 1/√2)),
+    NormalGradientDof(Vec(0.0, 1/2), Vec(1.0, 0.0)),
+    NormalGradientDof(Vec(1/2, 0.0), Vec((0.0,-1.0))),
 )
 FerriteGenElement.monomials(::Morley{RefTriangle,2}) = (
     Monomial((0,0)), # 1

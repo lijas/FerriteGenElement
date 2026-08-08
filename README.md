@@ -34,9 +34,9 @@ struct MyLinearTriangle <: Ferrite.Interpolation{RefTriangle,1}
 end
 
 FerriteGenElement.interpolation_dofs(::MyLinearTriangle) = (
-    PointEvaluation(Vec((0.0, 0.0))),
-    PointEvaluation(Vec((1.0, 0.0))),
-    PointEvaluation(Vec((0.0, 1.0))),
+    ValueDof(Vec((0.0, 0.0))),
+    ValueDof(Vec((1.0, 0.0))),
+    ValueDof(Vec((0.0, 1.0))),
 )
 
 FerriteGenElement.monomials(::MyLinearTriangle) = (
@@ -46,7 +46,7 @@ FerriteGenElement.monomials(::MyLinearTriangle) = (
 )
 ```
 
-Here, `PointEvaluation(Vec((0.0, 0.0)))` means that the corresponding DoF is the value of the function evaluated at the point `(0.0, 0.0)`.
+Here, `ValueDof(Vec((0.0, 0.0)))` means that the corresponding DoF is the value of the function evaluated at the point `(0.0, 0.0)`.
 
 The linear Lagrange triangle therefore has three value DoFs, one at each vertex. The vertices follow the definition and ordering used by `Ferrite.RefTriangle`.
 
@@ -168,12 +168,12 @@ struct Morley{RefTriangle,order} <: Ferrite.Interpolation{RefTriangle,order}
 end
 
 FerriteGenElement.interpolation_dofs(::Morley{RefTriangle,2}) = (
-    PointEvaluation(Vec((0.0, 0.0))),
-    PointEvaluation(Vec((1.0, 0.0))),
-    PointEvaluation(Vec((0.0, 1.0))),
-    NormalGradientEvaluation(Vec(1/2, 1/2), Vec(1/√2, 1/√2)),
-    NormalGradientEvaluation(Vec(0.0, 1/2), Vec(1.0, 0.0)),
-    NormalGradientEvaluation(Vec(1/2, 0.0), Vec((0.0,-1.0))),
+    ValueDof(Vec((0.0, 0.0))),
+    ValueDof(Vec((1.0, 0.0))),
+    ValueDof(Vec((0.0, 1.0))),
+    NormalGradientDof(Vec(1/2, 1/2), Vec(1/√2, 1/√2)),
+    NormalGradientDof(Vec(0.0, 1/2), Vec(1.0, 0.0)),
+    NormalGradientDof(Vec(1/2, 0.0), Vec((0.0,-1.0))),
 )
 
 FerriteGenElement.monomials(::Morley{RefTriangle,2}) = (
@@ -186,7 +186,7 @@ FerriteGenElement.monomials(::Morley{RefTriangle,2}) = (
 )
 ```
 
-In addition to the standard `PointEvaluation` at each corner, we define `NormalGradientEvaluation`, which takes the coordinate of the evaluation point and the corresponding edge normal.
+In addition to the standard `ValueDof` at each corner, we define `NormalGradientDof`, which takes the coordinate of the evaluation point and the corresponding edge normal.
 
 The Morley function space is
 
@@ -226,7 +226,7 @@ The result can be compared with the shape functions listed on [DefElement](https
 
 Unfortunately, these shape functions cannot (currently) be implemented and used in Ferrite using the standard finite-element mapping machinery.
 
-The reason is that the `NormalGradientEvaluation` DoFs cause the shape functions to couple when they are mapped from the reference element to a physical element.
+The reason is that the `NormalGradientDof` DoFs cause the shape functions to couple when they are mapped from the reference element to a physical element.
 
 For standard Lagrange elements, each physical shape function can be obtained directly from a corresponding reference shape function. For more general finite elements, like the Morley element, this is no longer necessarily the case.
 

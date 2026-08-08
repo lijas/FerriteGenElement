@@ -3,9 +3,9 @@ struct MyLinearTriangle <: Ferrite.Interpolation{RefTriangle,1}
 end
 
 FerriteGenElement.interpolation_dofs(::MyLinearTriangle) = (
-    PointEvaluation(Vec((0.0, 0.0))),
-    PointEvaluation(Vec((1.0, 0.0))),
-    PointEvaluation(Vec((0.0, 1.0))),
+    ValueDof(Vec((0.0, 0.0))),
+    ValueDof(Vec((1.0, 0.0))),
+    ValueDof(Vec((0.0, 1.0))),
 )
 FerriteGenElement.monomials(::MyLinearTriangle) = (
     Monomial((0,0)), # 1

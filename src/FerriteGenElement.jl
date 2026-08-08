@@ -11,66 +11,66 @@ using LinearAlgebra: Transpose
 abstract type Dof end
 
 """
-PointEvaluation
+ValueDof
 """
-struct PointEvaluation <: Dof
+struct ValueDof <: Dof
     ξ::Vec{2,Float64}
 end
-apply(::PointEvaluation, f, x) = f(x)
-apply2(a::PointEvaluation, f) = f(a.ξ)
-ncomponents(::PointEvaluation) = 1
+apply(::ValueDof, f, x) = f(x)
+apply2(a::ValueDof, f) = f(a.ξ)
+ncomponents(::ValueDof) = 1
 
 """
-DerivativeEvaluation
+DerivativeEDof
 """
-struct DerivativeEvaluation <: Dof
+struct DerivativeEDof <: Dof
     ξ::Vec{2,Float64}
     dir::Vec{2,Float64}
 end
-apply(::DerivativeEvaluation, f, x, dir) = Tensors.gradient(f, x) ⋅ dir
-apply2(a::DerivativeEvaluation, f) = Tensors.gradient(f, a.ξ) ⋅ a.dir
-ncomponents(::DerivativeEvaluation) = 1
+apply(::DerivativeEDof, f, x, dir) = Tensors.gradient(f, x) ⋅ dir
+apply2(a::DerivativeEDof, f) = Tensors.gradient(f, a.ξ) ⋅ a.dir
+ncomponents(::DerivativeEDof) = 1
 
-XDerivativeEvaluation(x) = DerivativeEvaluation(x, Vec((1.0, 0.0)))
-YDerivativeEvaluation(x) = DerivativeEvaluation(x, Vec((0.0, 1.0)))
+XDerivativeDof(x) = DerivativeEDof(x, Vec((1.0, 0.0)))
+YDerivativeDof(x) = DerivativeEDof(x, Vec((0.0, 1.0)))
 
 """
-NormalGradientEvaluation
+NormalGradientDof
 """
-struct NormalGradientEvaluation <: Dof
+struct NormalGradientDof <: Dof
     ξ::Vec{2,Float64}
     normal::Vec{2,Float64}
 end
-apply(::NormalGradientEvaluation, f, x, normal) = Tensors.gradient(f, x) ⋅ normal
-apply2(a::NormalGradientEvaluation, f) = Tensors.gradient(f, a.ξ) ⋅ a.normal
-ncomponents(::NormalGradientEvaluation) = 1
+apply(::NormalGradientDof, f, x, normal) = Tensors.gradient(f, x) ⋅ normal
+apply2(a::NormalGradientDof, f) = Tensors.gradient(f, a.ξ) ⋅ a.normal
+ncomponents(::NormalGradientDof) = 1
 
 """
-TangentGradientEvaluation
+TangentGradientDof
 """
-struct TangentGradientEvaluation <: Dof
+struct TangentGradientDof <: Dof
     ξ::Vec{2,Float64}
     tangent::Vec{2,Float64}
 end
-apply(::TangentGradientEvaluation, f, x, tangent) = Tensors.gradient(f, x) ⋅ tangent
-apply2(a::TangentGradientEvaluation, f) = Tensors.gradient(f, a.ξ) ⋅ a.tangent
-ncomponents(::TangentGradientEvaluation) = 1
+apply(::TangentGradientDof, f, x, tangent) = Tensors.gradient(f, x) ⋅ tangent
+apply2(a::TangentGradientDof, f) = Tensors.gradient(f, a.ξ) ⋅ a.tangent
+ncomponents(::TangentGradientDof) = 1
 
 """
-HessianEvaluation
+HessianDof
 """
-struct HessianEvaluation <: Dof
+struct HessianDof <: Dof
     ξ::Vec{2,Float64}
     dir1::Vec{2,Float64}
     dir2::Vec{2,Float64}
 end
-apply(::HessianEvaluation, f, x, dir1, dir2) = dir1 ⋅ Tensors.hessian(f, x) ⋅ dir2
-apply2(a::HessianEvaluation, f) = a.dir1 ⋅ Tensors.hessian(f, a.ξ) ⋅ a.dir2
-ncomponents(::HessianEvaluation) = 1
+apply(::HessianDof, f, x, dir1, dir2) = dir1 ⋅ Tensors.hessian(f, x) ⋅ dir2
+apply2(a::HessianDof, f) = a.dir1 ⋅ Tensors.hessian(f, a.ξ) ⋅ a.dir2
+ncomponents(::HessianDof) = 1
 
-XXHessianEvaluation(x) = HessianEvaluation(x, Vec((1.0, 0.0)), Vec((1.0, 0.0)))
-YYHessianEvaluation(x) = HessianEvaluation(x, Vec((0.0, 1.0)), Vec((0.0, 1.0)))
-XYHessianEvaluation(x) = HessianEvaluation(x, Vec((1.0, 0.0)), Vec((0.0, 1.0)))
+XXHessianDof(x) = HessianDof(x, Vec((1.0, 0.0)), Vec((1.0, 0.0)))
+YYHessianDof(x) = HessianDof(x, Vec((0.0, 1.0)), Vec((0.0, 1.0)))
+XYHessianDof(x) = HessianDof(x, Vec((1.0, 0.0)), Vec((0.0, 1.0)))
 
 #####
 # Mapping
@@ -93,10 +93,10 @@ end
 #####
 # Push forward operations for each DoF
 #####
-function push_forward(dof::PointEvaluation, ip::Interpolation, shape_nr::Int, ::Mapping)
+function push_forward(dof::ValueDof, ip::Interpolation, shape_nr::Int, ::Mapping)
     return Ferrite.reference_shape_value(ip, dof.ξ, shape_nr)
 end
-function push_forward(dof::DerivativeEvaluation, ip::Interpolation, shape_nr::Int, mapping::Mapping)
+function push_forward(dof::DerivativeEDof, ip::Interpolation, shape_nr::Int, mapping::Mapping)
     # Chain rule: ∇_x N = ∇_ξ N ⋅ J⁻¹
     ∇N = Ferrite.reference_shape_gradient(ip, dof.ξ, shape_nr)
     J = compute_jacobian(mapping, dof.ξ)
@@ -104,7 +104,7 @@ function push_forward(dof::DerivativeEvaluation, ip::Interpolation, shape_nr::In
     
     return ∇x_N ⋅ dof.dir
 end
-function push_forward(dof::NormalGradientEvaluation, ip::Interpolation, shape_nr::Int, mapping::Mapping)
+function push_forward(dof::NormalGradientDof, ip::Interpolation, shape_nr::Int, mapping::Mapping)
     ∇N = Ferrite.reference_shape_gradient(ip, dof.ξ, shape_nr)
     J = compute_jacobian(mapping, dof.ξ)
     ∇x_N = ∇N ⋅ inv(J)
@@ -134,7 +134,7 @@ include("element_interface.jl")
 include("create_B_matrix.jl")
 include("compute_shape_functions.jl")
 
-export PointEvaluation, DerivativeEvaluation, HessianEvaluation, NormalGradientEvaluation, TangentGradientEvaluation
+export ValueDof, DerivativeEDof, HessianDof, NormalGradientDof, TangentGradientDof
 export Mapping
 export Monomial
 export compute_reference_shape_values, print_reference_shape_values, build_B_matrix, build_M_matrix
