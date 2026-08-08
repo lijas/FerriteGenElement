@@ -1,0 +1,16 @@
+name = "FerriteGenElement"
+uuid = "049d3eb2-4288-49dc-b08a-b422d6851f8a"
+version = "0.1.0"
+authors = ["lijas <elias.isak.borjesson@gmail.com>"]
+
+[deps]
+Ferrite = "c061ca5d-56c9-439f-9c0e-210fe06d3992"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
+Tensors = "48a634ad-e948-5137-8d70-aa71f2a747f4"
+
+[compat]
+Ferrite = "1.6.0"
+LinearAlgebra = "1.12.0"
+Reexport = "1.2.2"
+Tensors = "1.17.1"
